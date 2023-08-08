@@ -66,7 +66,7 @@ The database schema includes two main tables:
 
    Create a `.env` file in the project root directory and provide the following configuration:
 
-   ```env
+   
 - `DB_HOST`: Hostname of the MySQL database.
 - `DB_PORT`: Port number of the MySQL database.
 - `DB_NAME`: Name of the MySQL database.
@@ -74,11 +74,10 @@ The database schema includes two main tables:
 - `DB_PASSWORD`: Password for connecting to the MySQL database.
 - `JWT_SECRET_KEY`: Secret key for JWT token generation.
 - `PORT`: Port on which the server will run.
-   ```
-
+  
    An example `.env.example` file is provided for reference:
 
-   ```env
+   ```
    DB_HOST=localhost
    DB_PORT=3306
    DB_NAME=backend_system_db
@@ -96,35 +95,200 @@ The database schema includes two main tables:
 
 The server will start on the specified port (default: 3000).
 
-## API Documentation:
-   
-1. User Registration
-Endpoint: POST /api/register
+Absolutely, I'll make the API Documentation section clearer. Here's the updated version:
+
+
+## API Documentation
+
+# 1. User Registration
+
+**Endpoint**: `POST /api/register`
 
 Allows users to register with the system by providing username, email, password, full name, age, and gender.
 
-2. Generate Token
-Endpoint: POST /api/token
+# Request
 
-Generates an access token for a user based on provided username and password.
+```json
+{
+  "username": "example_user",
+  "email": "user@example.com",
+  "password": "secure_password123",
+  "full_name": "John Doe",
+  "age": 30,
+  "gender": "male"
+}
+```
 
-3. Store Data
-Endpoint: POST /api/data
+# Success Response
+
+```json
+{
+  "status": "success",
+  "message": "User successfully registered!",
+  "data": {
+    "user_id": "12345",
+    "username": "example_user",
+    "email": "user@example.com",
+    "full_name": "John Doe",
+    "age": 30,
+    "gender": "male"
+  }
+}
+```
+
+# Error Response
+
+```json
+{
+  "status": "error",
+  "code": "INVALID_REQUEST",
+  "message": "Invalid request. Please provide all required fields: username, email, password, full_name."
+}
+```
+
+- `USERNAME_EXISTS`: The provided username is already taken. Please choose a different username.
+- `EMAIL_EXISTS`: The provided email is already registered. Please use a different email address.
+- `INVALID_PASSWORD`: The provided password does not meet the requirements.
+- `INVALID_AGE`: Invalid age value. Age must be a positive integer.
+- `GENDER_REQUIRED`: Gender field is required. Please specify the gender (e.g., male, female, non-binary).
+- `INTERNAL_SERVER_ERROR`: An internal server error occurred. Please try again later.
+
+# 2. Generate Token
+
+**Endpoint**: `POST /api/token`
+
+Generates an access token for a user based on the provided username and password.
+
+# Request
+
+```json
+{
+  "username": "example_user",
+  "password": "secure_password123"
+}
+```
+
+# Response
+
+```json
+{
+  "status": "success",
+  "message": "Access token generated successfully.",
+  "data": {
+    "access_token": "<TOKEN>",
+    "expires_in": 3600
+  }
+}
+```
+
+- `INVALID_CREDENTIALS`: Invalid credentials. The provided username or password is incorrect.
+- `MISSING_FIELDS`: Missing fields. Please provide both username and password.
+- `INTERNAL_ERROR`: Internal server error occurred. Please try again later.
+
+# 3. Store Data
+
+**Endpoint**: `POST /api/data`
 
 Stores a key-value pair in the database. Requires authentication using a valid access token.
 
-4. Retrieve Data
-Endpoint: GET /api/data/{key}
+# Request
+
+**Request Headers**:
+Authorization: Bearer access_token
+
+```json
+{
+  "key": "unique_key",
+  "value": "data_value"
+}
+```
+
+# Response
+
+```json
+{
+  "status": "success",
+  "message": "Data stored successfully."
+}
+```
+
+- `INVALID_KEY`: The provided key is not valid or missing.
+- `INVALID_VALUE`: The provided value is not valid or missing.
+- `KEY_EXISTS`: The provided key already exists in the database. To update an existing key, use the update API.
+- `INVALID_TOKEN`: Invalid access token provided
+
+# 4. Retrieve Data
+
+**Endpoint**: `GET /api/data/{key}`
 
 Retrieves the value associated with a specific key. Requires authentication using a valid access token.
 
-5. Update Data
-Endpoint: PUT /api/data/{key}
+# Request Headers
+
+- **`Authorization`**: Bearer **`access_token`**
+
+# Response
+
+```json
+{
+  "status": "success",
+  "data": {
+    "key": "unique_key",
+    "value": "data_value"
+  }
+}
+```
+
+- `KEY_NOT_FOUND`: The provided key does not exist in the database.
+- `INVALID_TOKEN`: Invalid access token provided
+
+# 5. Update Data
+
+**Endpoint**: `PUT /api/data/{key}`
 
 Updates the value associated with an existing key. Requires authentication using a valid access token.
 
-6. Delete Data
-Endpoint: DELETE /api/data/{key}
+# Request
+
+**Request Headers**:
+Authorization: Bearer access_token
+
+```json
+{
+  "value": "new_data_value"
+}
+```
+
+# Response
+
+```json
+{
+  "status": "success",
+  "message": "Data updated successfully."
+}
+```
+
+- `KEY_NOT_FOUND`: The provided key does not exist in the database.
+- `INVALID_TOKEN`: Invalid access token provided
+
+# 6. Delete Data
+
+**Endpoint**: `DELETE /api/data/{key}`
 
 Deletes a key-value pair from the database. Requires authentication using a valid access token.
 
+# Request Headers
+
+- **`Authorization`**: Bearer **`access_token`**
+
+# Response
+
+```json
+{
+  "status": "success",
+  "message": "Data deleted successfully."
+}
+```
+
+- `KEY_NOT_FOUND`: The provided key does not exist in the database.
+- `INVALID_TOKEN`: Invalid access token provided
