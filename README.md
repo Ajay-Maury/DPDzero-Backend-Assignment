@@ -95,8 +95,6 @@ The database schema includes two main tables:
 
 The server will start on the specified port (default: 3000).
 
-Absolutely, I'll make the API Documentation section clearer. Here's the updated version:
-
 
 ## API Documentation
 
